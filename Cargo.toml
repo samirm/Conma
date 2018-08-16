@@ -5,3 +5,4 @@ authors = ["Samir Mammadov <samir@droplit.io>"]
 
 [dependencies]
 chrono = "0.4"
+termion = "1"
