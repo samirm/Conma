@@ -14,13 +14,13 @@ struct Person {
 	tier: Tier,
 }
 
-static contacts:HashMap<Person, DateTime<Local>> = HashMap::new();
+static contacts: HashMap<Person, DateTime<Local>> = HashMap::new();
 
 fn main() {
     println!("Hello, world!");
 
-	contacts.insert(Person { name: "Farid M", tier: Tier::one }, Local::now());
-	contacts.insert(Person { name: "Richard L", tier: Tier::one }, Local::now());
+	contacts.insert(Person { name: "Farid M".to_string(), tier: Tier::one }, Local::now());
+	contacts.insert(Person { name: "Richard L".to_string(), tier: Tier::one }, Local::now());
 	
 	listContacts();
 }
