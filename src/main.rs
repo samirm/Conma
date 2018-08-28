@@ -3,8 +3,8 @@ extern crate chrono;
 
 use chrono::prelude::*;
 use std::collections::HashMap;
-use std::fs::File;
-use std::path::Path;
+//use std::fs::File;
+//use std::path::Path;
 use std::io;
 use std::fmt;
 
@@ -17,10 +17,10 @@ enum Tier {
 
 #[derive(Hash)]
 struct Person {
-	name: String,
+	name: &'a str,
 	tier: Tier,
-    pmoc: Vec<String>,
-    timeZone: i8, //UTC
+    pmoc: Vec<&'a str>,
+    time_zone: i8, //UTC
 }
 
 impl fmt::Display for Person {
@@ -40,16 +40,17 @@ static CONTACTS: HashMap<Person, Date<Local>> = HashMap::new();
 static CURRENT_TIME_ZONE: i8 = 0;
 
 fn check_timezone() {
-    let acceptableRange = -12..12;
+//    let timezone_range = -12..12;
     let mut input = String::new();
     if CURRENT_TIME_ZONE == 0 {
         println!("What UTC offset are you in?");
 
         loop {
             io::stdin().read_line(&mut input).expect("Failed to read line.");
+            let trimmed = input.trim();
 
-            CURRENT_TIME_ZONE = match input.trim().parse() {
-                Ok(num) => num,
+            match trimmed.parse::<i8>() {
+                Ok(num) => CURRENT_TIME_ZONE = num,
                 Err(..) => println!("Please enter a negative or positive integer (e.g. -12 .. 12)"),
             };
         }
@@ -63,16 +64,13 @@ fn main() {
     println!("\n 3. View calendar.");
     println!("\n 0. Quit.");
 
-    let vec = Vec::new();
-    vec.push("WA".to_string());
+    let vec = vec!["WA"];
+    let vec2 = vec!["TG"];
 
-    let vec2 = Vec::new();
-    vec.push("TG".to_string());
-
-	CONTACTS.insert(Person { name: "Farid M".to_string(), tier: Tier::One,
-        pmoc: vec, timeZone: -5 }, Local::now().date());
-	CONTACTS.insert(Person { name: "Richard L".to_string(), tier: Tier::One,
-        pmoc: vec2, timeZone: -5  }, Local::now().date());
+	CONTACTS.insert(Person { name: "Farid M", tier: Tier::One,
+        pmoc: vec, time_zone: -5 }, Local::now().date());
+	CONTACTS.insert(Person { name: "Richard L", tier: Tier::One,
+        pmoc: vec2, time_zone: -5  }, Local::now().date());
 
 	list_contacts();
 }
@@ -83,7 +81,7 @@ fn list_contacts() {
 	}
 }
 
-fn update_contact((name, tier, pmoc, timeZone): (String, String, String, String)) {
+fn update_contact() {
     let tp: Person;
 	if CONTACTS.insert(tp, Local::now().date()) != None {
 		println!("Contact updated successfully.");
