@@ -16,33 +16,31 @@ enum Tier {
 }
 
 #[derive(Hash)]
-struct Person {
+struct Person<'a> {
 	name: &'a str,
 	tier: Tier,
     pmoc: Vec<&'a str>,
     time_zone: i8, //UTC
 }
 
-impl fmt::Display for Person {
+impl<'a> fmt::Display for Person<'a> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({})", self.name)
     }
 }
 
-impl PartialEq for Person {
+impl<'a> PartialEq for Person<'a> {
     fn eq(&self, other: &Person) -> bool {
         self.name == other.name
     }
 }
-impl Eq for Person {}
+impl<'a> Eq for Person<'a> {}
 
-static CONTACTS: HashMap<Person, Date<Local>> = HashMap::new();
-static CURRENT_TIME_ZONE: i8 = 0;
-
-fn check_timezone() {
+fn check_timezone(current_timezone: i8) -> i8 {
 //    let timezone_range = -12..12;
     let mut input = String::new();
-    if CURRENT_TIME_ZONE == 0 {
+    let mut new_timezone = 0;
+    if current_timezone == 0 {
         println!("What UTC offset are you in?");
 
         loop {
@@ -50,14 +48,23 @@ fn check_timezone() {
             let trimmed = input.trim();
 
             match trimmed.parse::<i8>() {
-                Ok(num) => CURRENT_TIME_ZONE = num,
+                Ok(num) => {
+                    new_timezone = num;
+                    break;
+                },
                 Err(..) => println!("Please enter a negative or positive integer (e.g. -12 .. 12)"),
             };
         }
     }
+    return new_timezone;
 }
 
 fn main() {
+    let mut contacts: HashMap<Person, Date<Local>> = HashMap::new();
+    let mut current_timezone: i8 = 0;
+
+    current_timezone = check_timezone(current_timezone);
+
     println!("Welcome to Conma, what would you like to do?");
     println!("\n 1. Update contact(s).");
     println!("\n 2. Import contact(s).");
@@ -67,33 +74,37 @@ fn main() {
     let vec = vec!["WA"];
     let vec2 = vec!["TG"];
 
-	CONTACTS.insert(Person { name: "Farid M", tier: Tier::One,
+    contacts.insert(Person { name: "Farid M", tier: Tier::One,
         pmoc: vec, time_zone: -5 }, Local::now().date());
-	CONTACTS.insert(Person { name: "Richard L", tier: Tier::One,
+    contacts.insert(Person { name: "Richard L", tier: Tier::One,
         pmoc: vec2, time_zone: -5  }, Local::now().date());
-
-	list_contacts();
+    list_contacts(contacts);
 }
 
-fn list_contacts() {
-	for (person, date) in &CONTACTS {
+fn list_contacts(contacts: HashMap<Person, Date<Local>>) {
+	for (person, date) in &contacts {
 		println!("{}: \"{}\"", person, date);
 	}
 }
 
-fn update_contact() {
-    let tp: Person;
-	if CONTACTS.insert(tp, Local::now().date()) != None {
+fn update_contact(contacts: &mut HashMap<Person, Date<Local>>) {
+    let tp = Person {
+        name: "",
+        tier: Tier::Three,
+        pmoc: vec![],
+        time_zone: -3,
+    };
+	if contacts.insert(tp, Local::now().date()).is_none() {
 		println!("Contact updated successfully.");
 	} else {
 		println!("Contact does not exist.")
 	}
 }
 
-fn update_contact_tier(name: String, tier: String) {
-	
+fn update_contact_tier(name: string, tier: string) {
+	unimplemented!()
 }
 
-fn import_contacts(file: String) {
-
+fn import_contacts(file: string) {
+	unimplemented!()
 }
