@@ -3,10 +3,10 @@ extern crate chrono;
 
 use chrono::prelude::*;
 use std::collections::HashMap;
-//use std::fs::File;
-//use std::path::Path;
+use std::fs::File;
 use std::io;
 use std::fmt;
+use std::fs;
 
 #[derive(Hash)]
 enum Tier {
@@ -41,7 +41,7 @@ fn check_timezone(current_timezone: i8) -> i8 {
     let mut input = String::new();
     let mut new_timezone = 0;
     if current_timezone == 0 {
-        println!("What UTC offset are you in?");
+        println!("\nWhat UTC offset are you in?");
 
         loop {
             io::stdin().read_line(&mut input).expect("Failed to read line.");
@@ -63,13 +63,13 @@ fn main() {
     let mut contacts: HashMap<Person, Date<Local>> = HashMap::new();
     let mut current_timezone: i8 = 0;
 
+    println!("Welcome to Conma, what would you like to do?");
     current_timezone = check_timezone(current_timezone);
 
-    println!("Welcome to Conma, what would you like to do?");
-    println!("\n 1. Update contact(s).");
-    println!("\n 2. Import contact(s).");
-    println!("\n 3. View calendar.");
-    println!("\n 0. Quit.");
+    println!("\n1. Update contact(s).");
+    println!("2. Import contact(s).");
+    println!("3. View calendar.");
+    println!("0. Quit.\n");
 
     let vec = vec!["WA"];
     let vec2 = vec!["TG"];
@@ -79,6 +79,7 @@ fn main() {
     contacts.insert(Person { name: "Richard L", tier: Tier::One,
         pmoc: vec2, time_zone: -5  }, Local::now().date());
     list_contacts(contacts);
+    import_contacts();
 }
 
 fn list_contacts(contacts: HashMap<Person, Date<Local>>) {
@@ -101,10 +102,15 @@ fn update_contact(contacts: &mut HashMap<Person, Date<Local>>) {
 	}
 }
 
-fn update_contact_tier(name: string, tier: string) {
+fn update_contact_tier(name: &str, tier: Tier) {
 	unimplemented!()
 }
 
-fn import_contacts(file: string) {
-	unimplemented!()
+fn import_contacts(){
+    println!("contents: {}", read_file("data/result.json"));
+}
+
+fn read_file(filepath: &str) -> String {
+//    let file = File::open(filepath).expect("could not open file.");
+    return fs::read_to_string(filepath).expect("reading file went wrong.");
 }
